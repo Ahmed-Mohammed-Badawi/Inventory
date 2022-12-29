@@ -1,0 +1,34 @@
+.Submit_BTN {
+    padding: 0.5rem 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    height: 5rem;
+    background-color: var(--white);
+    border-radius: var(--radius_10);
+    border: 0;
+    box-shadow: 0 0 0.6rem var(--shadow_16);
+    cursor: pointer;
+    transition: transform .15s ease-in-out;
+    // Text
+    span {
+        color: var(--orange_1);
+        font-size: 2rem;
+        margin-left: 1rem;
+    }
+    
+    &:hover {
+        transform: translateY(-3px);
+    }
+    
+    &:active{
+        transform: translateY(0);
+        box-shadow: inset 0 0 0.6rem var(--shadow_16);
+    }
+
+    @media (max-width: 850px) {
+        width: auto;
+        padding: .5rem 4rem;
+    }
+}
