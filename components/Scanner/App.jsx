@@ -7,24 +7,32 @@ class App extends React.Component {
 
         // This binding is necessary to make `this` work in the callback.
         this.onNewScanResult = this.onNewScanResult.bind(this);
+        this.state = {
+            text: "",
+        };
     }
 
     render() {
         return (
-            <div className="Scanner">
+            <div className='Scanner'>
                 <Html5QrcodePlugin
                     fps={10}
                     qrbox={250}
                     disableFlip={false}
                     qrCodeSuccessCallback={this.onNewScanResult}
                 />
+
+                <div className="ResultCode">
+                    {this.state.text}
+                </div>
             </div>
         );
     }
 
     onNewScanResult(decodedText, decodedResult) {
-        console.log(decodedText);
-        console.log(decodedResult);
+        this.setState({
+            text: decodedText,
+        });
     }
 }
 

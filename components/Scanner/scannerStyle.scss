@@ -2,6 +2,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     padding: 5rem 3rem;
     background-color: var(--gray_light_1);
     background-image: url("/Images/Home_BG_Smaller.svg");
@@ -186,4 +187,12 @@
             }
         }
     }
+}
+
+
+.ResultCode{
+    background-color: white;
+    padding: 1rem;
+    color: black;
+    min-width: 300px;
 }
