@@ -1,12 +1,19 @@
-import classes from "../styles/Home.module.scss";
+import classes from "../components/Pages/Home.module.scss";
 // Imports
 import Head from "next/head";
 import Image from "next/image";
+import App from "../components/Scanner/App";
 
 export default function Home() {
     return (
         <>
-            <Head></Head>
+            <Head>
+                <title>Home</title>
+                <meta
+                    name='description'
+                    content='Inventory Home Page where you can create or scan a product'
+                />
+            </Head>
             <div className={classes.Home}>
                 <div className={classes.Content}>
                     <div className={classes.Top}>
@@ -51,6 +58,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
+            <App />
         </>
     );
 }

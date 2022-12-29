@@ -4,11 +4,11 @@ import classes from './Buttons.module.scss';
 import Image from "next/image";
 
 
-function SubmitButton() {
+function SubmitButton({buttonText, buttonFunction}) {
     return (
-        <button className={classes.Submit_BTN}>
+        <button className={classes.Submit_BTN} onClick={buttonFunction}>
             <Image src={"/Icons/SubmitLogin_Icon.svg"} width={16} height={16} alt={"Send Icon"} />
-            <span>Login</span>
+            <span>{buttonText}</span>
         </button>
     );
 }

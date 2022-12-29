@@ -90,7 +90,10 @@ function login() {
                                     />
                                 </div>
                                 <div className={classes.BTN_Container}>
-                                    <SubmitButton />
+                                    <SubmitButton
+                                        buttonText={"Login"}
+                                        buttonFunction={() => {}}
+                                    />
                                 </div>
                             </form>
                         </div>
