@@ -2,9 +2,13 @@ import classes from "../components/Pages/Home.module.scss";
 // Imports
 import Head from "next/head";
 import Image from "next/image";
-import App from "../components/Scanner/App";
+import { useRouter } from "next/router";
 
 export default function Home() {
+
+    // initialize Router
+    const router = useRouter();
+
     return (
         <>
             <Head>
@@ -37,7 +41,7 @@ export default function Home() {
                         </button>
                     </div>
                     <div className={classes.Bottom}>
-                        <button className={classes.MainBTN}>
+                        <button className={classes.MainBTN} onClick={() => router.push('/scan')}>
                             <Image
                                 src={"/Icons/ScannerBTN.svg"}
                                 width={40}
@@ -58,7 +62,6 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-            <App />
         </>
     );
 }

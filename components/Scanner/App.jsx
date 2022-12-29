@@ -11,8 +11,7 @@ class App extends React.Component {
 
     render() {
         return (
-            <div>
-                <h1>Html5Qrcode React example!</h1>
+            <div className="Scanner">
                 <Html5QrcodePlugin
                     fps={10}
                     qrbox={250}
