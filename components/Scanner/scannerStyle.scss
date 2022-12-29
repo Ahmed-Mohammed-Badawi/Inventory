@@ -30,14 +30,15 @@
         color: var(--red_1) !important;
         border-radius: var(--radius_10);
     }
-
     #html5qr-code-full-region__dashboard_section {
         display: flex;
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
+        gap: 1rem;
 
         #html5-qrcode-button-camera-permission {
+            width: 100%;
             padding: 0.5rem 1rem;
             color: var(--white);
             background-color: #cfb5a6;
@@ -58,8 +59,19 @@
             }
         }
 
+        & > div {
+            width: 100%;
+
+            & > * {
+                display: block;
+                width: 94% !important;
+            }
+        }
+
         #html5-qrcode-anchor-scan-type-change {
             text-decoration: none !important;
+            font-size: 1.4rem;
+            width: 94%;
             padding: 0.5rem 1rem;
             color: var(--gray_dark_3);
             background-color: var(--white);
@@ -67,6 +79,7 @@
             border: none;
             box-shadow: 0 0 3px var(--shadow_25);
             margin-right: 1rem;
+            margin-left: 1rem;
             transition: all 0.15s ease-in-out;
             cursor: pointer;
 
@@ -75,28 +88,36 @@
             }
         }
 
-        #html5qr-code-full-region__dashboard_section_csr + div {
-            border: 2px dashed var(--gray_dark_3) !important;
+        #html5qr-code-full-region__dashboard_section_csr {
+            width: 94%;
 
-            label {
-                button {
-                    padding: 1rem;
-                    color: var(--white);
-                    background-color: #cfb5a6;
-                    border-radius: var(--radius_5);
-                    border: none;
-                    box-shadow: 0 0 3px var(--shadow_25);
-                    margin-left: 1rem;
-                    transition: all 0.15s ease-in-out;
-                    cursor: pointer;
+            & > div{
+                width: 100%;
+            }
 
-                    &:hover {
-                        color: var(--orange_2);
-                        background-color: var(--white);
-                    }
+            & + div {
+                border: 2px dashed var(--gray_dark_3) !important;
 
-                    &:active {
-                        box-shadow: inset 0 0 3px var(--shadow_25);
+                label {
+                    button {
+                        padding: 1rem;
+                        color: var(--white);
+                        background-color: #cfb5a6;
+                        border-radius: var(--radius_5);
+                        border: none;
+                        box-shadow: 0 0 3px var(--shadow_25);
+                        margin-left: 1rem;
+                        transition: all 0.15s ease-in-out;
+                        cursor: pointer;
+
+                        &:hover {
+                            color: var(--orange_2);
+                            background-color: var(--white);
+                        }
+
+                        &:active {
+                            box-shadow: inset 0 0 3px var(--shadow_25);
+                        }
                     }
                 }
             }
