@@ -9,6 +9,10 @@
     background-repeat: no-repeat;
     background-size: cover;
     min-height: 100vh;
+
+    @media (max-width: 500px) {
+        padding: 5rem 1.2rem;
+    }
 }
 
 #html5qr-code-full-region {
@@ -91,7 +95,7 @@
         #html5qr-code-full-region__dashboard_section_csr {
             width: 94%;
 
-            & > div{
+            & > div {
                 width: 100%;
             }
 
@@ -114,6 +118,65 @@
                             color: var(--orange_2);
                             background-color: var(--white);
                         }
+
+                        &:active {
+                            box-shadow: inset 0 0 3px var(--shadow_25);
+                        }
+                    }
+                }
+            }
+        }
+
+        #html5qr-code-full-region__dashboard_section_csr {
+            margin: auto;
+            span {
+                &:first-of-type {
+                    display: flex;
+                    flex-direction: column;
+                    text-align: left;
+                    gap: 0.7rem;
+                    margin-right: 0 !important;
+                    margin-bottom: 1.5rem;
+                    font-size: 1.4rem;
+                    color: var(--orange_1);
+
+                    select {
+                        padding: 0.5rem 1rem;
+                        cursor: pointer;
+
+                        option {
+                            padding: 0.5rem 1rem;
+                        }
+                    }
+                }
+
+                &:last-of-type {
+                    width: 100%;
+
+                    #html5-qrcode-button-camera-start {
+                        width: 100%;
+                        padding: 0.8rem 1rem;
+                        background-color: #cfb5a6;
+                        color: white;
+                        box-shadow: 0 0 4px var(--shadow_16);
+                        border: none;
+                        border-radius: var(--radius_5);
+                        cursor: pointer;
+
+                        &:active {
+                            box-shadow: inset 0 0 3px var(--shadow_25);
+                        }
+                    }
+
+                    #html5-qrcode-button-camera-stop {
+                        width: 100%;
+                        padding: 0.8rem 1rem;
+                        background-color: #cfb5a6;
+                        color: white;
+                        box-shadow: 0 0 4px var(--shadow_16);
+                        border: none;
+                        border-radius: var(--radius_5);
+                        cursor: pointer;
 
                         &:active {
                             box-shadow: inset 0 0 3px var(--shadow_25);
