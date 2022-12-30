@@ -6,6 +6,7 @@ import Head from "next/head";
 import Image from "next/image";
 import SubmitButton from "../components/Layout/SubmitButton";
 import axios from "axios";
+import check_token from "../helpers/check_token";
 // Redux
 import { useDispatch } from "react-redux";
 import { clearTheInput } from "../Redux/Reducers/layoutReducer";
@@ -30,11 +31,17 @@ function Product() {
     };
 
     // Get the Data Function
-    async function getTheData(url = "https://dummyjson.com/products/1") {
+    async function getTheData(
+        url = "https://inventory.gooadmin.art/api/v1/asset/details"
+    ) {
         const theResult = await axios
-            .get(url)
-            .then((res) => res.data)
-            .catch((err) => err.message);
+            .get(url, {
+                params: {
+                    assetNumber: "100670031000000",
+                },
+            })
+            .then((res) => res)
+            .catch((err) => err);
 
         console.log(theResult);
     }
@@ -45,11 +52,34 @@ function Product() {
         toast.error("We Are Just test it");
     }, []);
 
+    // Update The Data
+    const UpdateHandler = (event) => {
+        // event.preventDefault();
+
+        const Data = {
+            assetNumber: 10067003,
+            location: "Cairo",
+            inventory: "inventory",
+            employeeNumber: "Ahmed",
+            //  DAY / MONTH / YEAR
+            assignFromDate: "15/02/2001",
+            quantity: 15,
+        };
+
+        axios
+            .put(`https://inventory.gooadmin.art/api/v1/update/asset`, Data)
+            .then((res) => res.data)
+            .catch((err) => console.log(err));
+    };
+
     return (
         <>
             <Head>
                 <title>{DUMMY.AssetName}</title>
-                <meta name={'description'} content={`This Page is allow ing you to check and update the product ${DUMMY.AssetName}`} />
+                <meta
+                    name={"description"}
+                    content={`This Page is allowing you to check and update the product ${DUMMY.AssetName}`}
+                />
             </Head>
             <div className={classes.Product}>
                 <div className={classes.Content}>
@@ -184,7 +214,7 @@ function Product() {
                         <div className={classes.BTN_Container}>
                             <SubmitButton
                                 buttonText={"Update"}
-                                buttonFunction={() => {}}
+                                buttonFunction={() => UpdateHandler()}
                             />
                         </div>
                     </section>
@@ -195,3 +225,25 @@ function Product() {
 }
 
 export default Product;
+
+// You should use getServerSideProps when:
+// - Only if you need to pre-render a page whose data must be fetched at request time
+export const getServerSideProps = async (ctx) => {
+    // Cookies
+    const { authenticated, authentication_token } = ctx.req.cookies;
+    // check if the token is valid
+    const real_token = check_token(authentication_token);
+    // check if the user is valid
+    if (!authenticated || !real_token) {
+        return {
+            redirect: {
+                destination: "/login",
+                permanent: false,
+            },
+        };
+    }
+
+    return {
+        props: {},
+    };
+};

@@ -3,9 +3,10 @@ import classes from "../components/Pages/Home.module.scss";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
+// Helpers
+import check_token from "../helpers/check_token";
 
 export default function Home() {
-
     // initialize Router
     const router = useRouter();
 
@@ -42,7 +43,10 @@ export default function Home() {
                         </button>
                     </div>
                     <div className={classes.Bottom}>
-                        <button className={classes.MainBTN} onClick={() => router.push('/scan')}>
+                        <button
+                            className={classes.MainBTN}
+                            onClick={() => router.push("/scan")}
+                        >
                             <Image
                                 src={"/Icons/ScannerBTN.svg"}
                                 width={40}
@@ -66,3 +70,25 @@ export default function Home() {
         </>
     );
 }
+
+// You should use getServerSideProps when:
+// - Only if you need to pre-render a page whose data must be fetched at request time
+export const getServerSideProps = async (ctx) => {
+    // Cookies
+    const { authenticated, authentication_token } = ctx.req.cookies;
+    // check if the token is valid
+    const real_token = check_token(authentication_token);
+    // check if the user is valid
+    if (!authenticated || !real_token) {
+        return {
+            redirect: {
+                destination: "/login",
+                permanent: false,
+            },
+        };
+    }
+
+    return {
+        props: {},
+    };
+};
