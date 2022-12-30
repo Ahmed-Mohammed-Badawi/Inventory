@@ -14,7 +14,6 @@ const LayoutSlice = createSlice({
             state.code = action.payload.code
         },
     },
-    extraReducers: {},
 });
 
 export const { clearTheInput, updateTheCode } = LayoutSlice.actions;

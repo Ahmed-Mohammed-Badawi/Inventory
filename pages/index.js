@@ -25,7 +25,8 @@ export default function Home() {
                             <div className={classes.Logo}>
                                 <Image
                                     src={"/Images/Logo.png"}
-                                    layout={"fill"}
+                                    width={237}
+                                    height={60}
                                     alt={"Company logo"}
                                 />
                             </div>

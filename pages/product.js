@@ -8,7 +8,9 @@ import SubmitButton from "../components/Layout/SubmitButton";
 import axios from "axios";
 // Redux
 import { useDispatch } from "react-redux";
-import {clearTheInput} from '../Redux/Reducers/layoutReducer';
+import { clearTheInput } from "../Redux/Reducers/layoutReducer";
+// Notifications
+import { toast } from "react-toastify";
 
 function Product() {
     // router
@@ -27,6 +29,7 @@ function Product() {
         PlateNumber: 53,
     };
 
+    // Get the Data Function
     async function getTheData(url = "https://dummyjson.com/products/1") {
         const theResult = await axios
             .get(url)
@@ -39,12 +42,14 @@ function Product() {
     // Get the Data
     useEffect(() => {
         getTheData();
+        toast.error("We Are Just test it");
     }, []);
 
     return (
         <>
             <Head>
                 <title>{DUMMY.AssetName}</title>
+                <meta name={'description'} content={`This Page is allow ing you to check and update the product ${DUMMY.AssetName}`} />
             </Head>
             <div className={classes.Product}>
                 <div className={classes.Content}>
@@ -54,7 +59,8 @@ function Product() {
                                 <div className={classes.Logo}>
                                     <Image
                                         src={"/Images/Logo.png"}
-                                        layout={"fill"}
+                                        width={237}
+                                        height={60}
                                         alt={"Company logo"}
                                     />
                                 </div>
