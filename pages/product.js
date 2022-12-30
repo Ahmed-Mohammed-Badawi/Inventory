@@ -1,11 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
 import classes from "../components/Pages/product.module.scss";
 // IMPORTS
 import Head from "next/head";
 import Image from "next/image";
 import SubmitButton from "../components/Layout/SubmitButton";
+import axios from "axios";
+// Redux
+import { useDispatch } from "react-redux";
+import {clearTheInput} from '../Redux/Reducers/layoutReducer';
 
-function product() {
+function Product() {
+    // router
+    const router = useRouter();
+
+    //  init Redux
+    const dispatch = useDispatch();
+
+    // Data
     const DUMMY = {
         AssetNumber: 350,
         AssetName: "Lenovo Legion7 530p",
@@ -14,6 +26,20 @@ function product() {
         Serial: "E52365S896",
         PlateNumber: 53,
     };
+
+    async function getTheData(url = "https://dummyjson.com/products/1") {
+        const theResult = await axios
+            .get(url)
+            .then((res) => res.data)
+            .catch((err) => err.message);
+
+        console.log(theResult);
+    }
+
+    // Get the Data
+    useEffect(() => {
+        getTheData();
+    }, []);
 
     return (
         <>
@@ -52,7 +78,13 @@ function product() {
                                     alt={"Create Icon"}
                                 />
                             </button>
-                            <button className={classes.Scan}>
+                            <button
+                                className={classes.Scan}
+                                onClick={() => {
+                                    dispatch(clearTheInput());
+                                    router.push("/scan");
+                                }}
+                            >
                                 <Image
                                     src={"/Icons/Scanner_Black.svg"}
                                     width={30}
@@ -156,4 +188,4 @@ function product() {
     );
 }
 
-export default product;
+export default Product;

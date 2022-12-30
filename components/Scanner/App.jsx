@@ -1,8 +1,14 @@
-import Image from "next/image";
 import React from "react";
+import Image from "next/image";
+import Router from "next/router";
+// Qr
 import Html5QrcodePlugin from "./Html5QrcodePlugin";
 import BarcodeSoundWAV from "../../public/sound/Barcode.mp3";
-
+// Redux
+import { connect } from "react-redux";
+import {
+    updateTheCode,
+} from "../../Redux/Reducers/layoutReducer";
 
 class App extends React.Component {
     constructor(props) {
@@ -10,14 +16,11 @@ class App extends React.Component {
 
         // This binding is necessary to make `this` work in the callback.
         this.onNewScanResult = this.onNewScanResult.bind(this);
-        // State
-        this.state = {
-            text: "",
-        };
     }
 
-    updateTheStateHandler(event) {
-        this.setState({ text: event.target.value });
+    barcodeHandler() {
+        // Go to the product page
+        Router.push("/product");
     }
 
     render() {
@@ -46,10 +49,12 @@ class App extends React.Component {
                                 id='CodeInput'
                                 type='text'
                                 placeholder='Scan for a code or type one'
-                                value={this.state.text}
-                                onInput={(e) => this.updateTheStateHandler(e)}
+                                value={this.props.code}
+                                onInput={(e) =>
+                                    this.props.updateTheCode(e.target.value)
+                                }
                             />
-                            <button>
+                            <button onClick={this.barcodeHandler}>
                                 <Image
                                     src={"/Icons/SubmitLogin_Icon.svg"}
                                     width={18}
@@ -65,16 +70,26 @@ class App extends React.Component {
     }
 
     onNewScanResult(decodedText, decodedResult) {
-        // Run the Sound 
+        // Run the Sound
         const codeSoundMP3 = new Audio(BarcodeSoundWAV);
-        codeSoundMP3.addEventListener('loadeddata', () => {
+        codeSoundMP3.addEventListener("loadeddata", () => {
             codeSoundMP3.play();
-        })
-
-        this.setState({
-            text: decodedText,
         });
+        // Update the State in redux
+        this.props.updateTheCode(decodedText);
+        // What will Happen after Reading the Barecode
+        this.barcodeHandler();
     }
 }
 
-export default App;
+// export default App;
+
+const mapStateToProps = (state) => ({
+    code: state.layout.code,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    updateTheCode: (code) => dispatch(updateTheCode({ code })),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
