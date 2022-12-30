@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import Html5QrcodePlugin from "./Html5QrcodePlugin";
+import BarcodeSound from '../../public/sound/Barcode.wav';
 
 class App extends React.Component {
     constructor(props) {
@@ -8,6 +9,7 @@ class App extends React.Component {
 
         // This binding is necessary to make `this` work in the callback.
         this.onNewScanResult = this.onNewScanResult.bind(this);
+        // State
         this.state = {
             text: "",
         };
@@ -62,6 +64,11 @@ class App extends React.Component {
     }
 
     onNewScanResult(decodedText, decodedResult) {
+        const codeSound = new Audio(BarcodeSound);
+
+        // Play a scan sound
+        codeSound.play()
+
         this.setState({
             text: decodedText,
         });

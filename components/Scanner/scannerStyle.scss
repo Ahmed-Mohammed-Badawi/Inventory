@@ -244,6 +244,9 @@
             }
 
             button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 position: absolute;
                 top: 0;
                 right: 0;
@@ -253,9 +256,14 @@
                 border: none;
                 box-shadow: 0 0 .4rem var(--shadow_16);
                 border-radius: var(--radius_5);
+                cursor: pointer;
+
+                & > *{
+                    transform: rotateY(180deg);
+                }
                 
                 &:active{
-                    box-shadow: inset 0 0 .4rem var(--shadow_16);
+                    box-shadow: inset 0 0 .3rem var(--shadow_16);
                 }
             }
         }
