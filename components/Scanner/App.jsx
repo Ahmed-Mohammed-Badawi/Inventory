@@ -1,7 +1,8 @@
 import Image from "next/image";
 import React from "react";
 import Html5QrcodePlugin from "./Html5QrcodePlugin";
-import BarcodeSound from '../../public/sound/Barcode.wav';
+import BarcodeSoundWAV from "../../public/sound/Barcode.mp3";
+
 
 class App extends React.Component {
     constructor(props) {
@@ -64,10 +65,11 @@ class App extends React.Component {
     }
 
     onNewScanResult(decodedText, decodedResult) {
-        const codeSound = new Audio(BarcodeSound);
-
-        // Play a scan sound
-        codeSound.play()
+        // Run the Sound 
+        const codeSoundMP3 = new Audio(BarcodeSoundWAV);
+        codeSoundMP3.addEventListener('loadeddata', () => {
+            codeSoundMP3.play();
+        })
 
         this.setState({
             text: decodedText,
