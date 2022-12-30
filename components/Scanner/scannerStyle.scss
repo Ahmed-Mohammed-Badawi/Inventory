@@ -20,7 +20,7 @@
     background-color: var(--white);
     width: 100%;
     max-width: 500px;
-    margin: auto;
+    margin: 2rem auto;
     border-radius: var(--radius_10);
     border: none !important;
     box-shadow: 0 0 4px var(--shadow_16);
@@ -189,10 +189,75 @@
     }
 }
 
-
-.ResultCode{
+// Additional Elements in Scanner
+.ResultCode {
     background-color: white;
     padding: 1rem;
     color: black;
-    min-width: 300px;
+    width: 100%;
+    max-width: 500px;
+    padding: 3rem;
+    border-radius: var(--radius_10);
+    box-shadow: 0 0 4px var(--shadow_16);
+
+    .InputContainer {
+        display: flex;
+        flex-direction: column;
+
+        label[for="CodeInput_label"] {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 1rem;
+
+            p {
+                font-size: 1.8rem;
+                color: var(--orange_1);
+            }
+        }
+
+        .Input__Button {
+            display: flex;
+            gap: .5rem;
+            position: relative;
+
+            input {
+                width: calc(100% - 4.5rem);
+                padding: 1.4rem 4rem 1.4rem 2rem;
+                border: 0;
+                font-family: var(--Roboto);
+                font-size: 1.3rem;
+                color: var(--gray_dark_1);
+                caret-color: var(--orange_1);
+                border-radius: var(--radius_5);
+                box-shadow: inset 0 0 0.6rem var(--shadow_16);
+
+                &:focus {
+                    outline-width: 1px;
+                    outline-style: solid;
+                    outline-color: var(--orange_2);
+                }
+
+                &::placeholder {
+                    font-size: 1.3rem;
+                }
+            }
+
+            button {
+                position: absolute;
+                top: 0;
+                right: 0;
+                height: 100%;
+                width: 4rem;
+                background-color: var(--white);
+                border: none;
+                box-shadow: 0 0 .4rem var(--shadow_16);
+                border-radius: var(--radius_5);
+                
+                &:active{
+                    box-shadow: inset 0 0 .4rem var(--shadow_16);
+                }
+            }
+        }
+    }
 }
