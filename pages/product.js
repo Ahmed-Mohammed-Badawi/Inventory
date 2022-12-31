@@ -198,6 +198,8 @@ function Product() {
 
     // LogoutHandler
     const logoutHandler = () => {
+        // clear the scan input
+        dispatch(clearTheInput());
         // change the authenticated state at cookies
         document.cookie = `authenticated=false;`;
         // redirect to login

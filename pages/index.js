@@ -3,13 +3,21 @@ import classes from "../components/Pages/Home.module.scss";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
+// Redux
+import { useDispatch } from "react-redux";
+import { clearTheInput } from "../Redux/Reducers/layoutReducer";
 
 export default function Home() {
     // initialize Router
     const router = useRouter();
 
+    // initialize Redux
+    const dispatch = useDispatch();
+
     // LogoutHandler
     const logoutHandler = () => {
+        // clear the scan input
+        dispatch(clearTheInput());
         // change the authenticated to false
         document.cookie = `authenticated=false;`;
         // redirect
@@ -54,7 +62,11 @@ export default function Home() {
                     <div className={classes.Bottom}>
                         <button
                             className={classes.MainBTN}
-                            onClick={() => router.push("/scan")}
+                            onClick={() => {
+                                // Clear the scan inputand redirect
+                                dispatch(clearTheInput());
+                                router.push("/scan");
+                            }}
                         >
                             <Image
                                 src={"/Icons/ScannerBTN.svg"}
