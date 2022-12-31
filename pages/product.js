@@ -20,7 +20,7 @@ function Product() {
     useEffect(() => {
         // redirect if the authenticated is false
         const authenticated = document.cookie.split("=");
-        if (authenticated[1] !== "true") {
+        if (!authenticated || authenticated[1] !== "true") {
             // redirect if Authentication is not true
             router.replace("/login");
         }

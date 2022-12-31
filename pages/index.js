@@ -85,9 +85,8 @@ export default function Home() {
 export const getServerSideProps = async (ctx) => {
     // Cookies
     const { authenticated } = ctx.req.cookies;
-    console.log(authenticated);
     // check if the user is valid
-    if (authenticated !== "true") {
+    if (!authenticated || authenticated !== "true") {
         return {
             redirect: {
                 destination: "/login",

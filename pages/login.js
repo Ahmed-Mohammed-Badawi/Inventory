@@ -177,7 +177,7 @@ export const getServerSideProps = async (ctx) => {
     // Cookies
     const { authenticated } = ctx.req.cookies;
     // check if the user is valid
-    if (authenticated !== "false") {
+    if (authenticated && authenticated !== "false") {
         return {
             redirect: {
                 destination: "/",
