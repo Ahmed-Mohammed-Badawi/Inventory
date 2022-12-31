@@ -5,6 +5,7 @@ import classes from "../components/Pages/product.module.scss";
 import Head from "next/head";
 import Image from "next/image";
 import SubmitButton from "../components/Layout/SubmitButton";
+import ScanButton from "../components/Layout/ScanButton";
 import axios from "axios";
 // Redux
 import { useDispatch, useSelector } from "react-redux";
@@ -384,6 +385,12 @@ function Product() {
                             />
                         </article>
                         <div className={classes.BTN_Container}>
+                            <ScanButton
+                                submit_function={() => {
+                                    dispatch(clearTheInput());
+                                    router.push("/scan");
+                                }}
+                            />
                             <SubmitButton
                                 buttonText={"Update"}
                                 buttonFunction={(event) =>
