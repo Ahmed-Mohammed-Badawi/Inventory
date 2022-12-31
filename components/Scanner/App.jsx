@@ -50,7 +50,7 @@ class App extends React.Component {
                                 id='CodeInput'
                                 type='text'
                                 placeholder='Scan for a code or type one'
-                                autoComplete="false"
+                                autoComplete="off"
                                 value={this.props.code}
                                 onInput={(e) =>
                                     this.props.updateTheCode(e.target.value)
