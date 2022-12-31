@@ -3,12 +3,18 @@ import classes from "../components/Pages/Home.module.scss";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-// Helpers
-import check_token from "../helpers/check_token";
 
 export default function Home() {
     // initialize Router
     const router = useRouter();
+
+    // LogoutHandler
+    const logoutHandler = () => {
+        // change the authenticated to false
+        document.cookie = `authenticated=false;`;
+        // redirect
+        router.replace("/login");
+    };
 
     return (
         <>
@@ -32,7 +38,10 @@ export default function Home() {
                                 />
                             </div>
                         </div>
-                        <button className={classes.LogOut}>
+                        <button
+                            className={classes.LogOut}
+                            onClick={logoutHandler}
+                        >
                             <Image
                                 src={"/Icons/Logout.svg"}
                                 width={18}
@@ -75,11 +84,10 @@ export default function Home() {
 // - Only if you need to pre-render a page whose data must be fetched at request time
 export const getServerSideProps = async (ctx) => {
     // Cookies
-    const { authenticated, authentication_token } = ctx.req.cookies;
-    // check if the token is valid
-    const real_token = check_token(authentication_token);
+    const { authenticated } = ctx.req.cookies;
+    console.log(authenticated);
     // check if the user is valid
-    if (!authenticated || !real_token) {
+    if (authenticated !== "true") {
         return {
             redirect: {
                 destination: "/login",

@@ -18,9 +18,10 @@ class App extends React.Component {
         this.onNewScanResult = this.onNewScanResult.bind(this);
     }
 
-    barcodeHandler() {
+    barcodeHandler(code) {
+        console.log(code);
         // Go to the product page
-        Router.push("/product");
+        Router.push(`/product?code=${code}`);
     }
 
     render() {
@@ -49,12 +50,13 @@ class App extends React.Component {
                                 id='CodeInput'
                                 type='text'
                                 placeholder='Scan for a code or type one'
+                                autoComplete="false"
                                 value={this.props.code}
                                 onInput={(e) =>
                                     this.props.updateTheCode(e.target.value)
                                 }
                             />
-                            <button onClick={this.barcodeHandler}>
+                            <button onClick={() => this.barcodeHandler(this.props.code)}>
                                 <Image
                                     src={"/Icons/SubmitLogin_Icon.svg"}
                                     width={18}
@@ -78,7 +80,7 @@ class App extends React.Component {
         // Update the State in redux
         this.props.updateTheCode(decodedText);
         // What will Happen after Reading the Barecode
-        this.barcodeHandler();
+        this.barcodeHandler(decodedText);
     }
 }
 

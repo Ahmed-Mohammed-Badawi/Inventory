@@ -9,19 +9,15 @@ import SubmitButton from "../components/Layout/SubmitButton";
 import axios from "axios";
 // Notifications
 import { toast } from "react-toastify";
-// Helpers
-import makeA_token from "../helpers/makeA_token";
-import check_token from "../helpers/check_token";
-
 
 function Login() {
-
     // Router
     const router = useRouter();
     // REfs
     const userNameRef = useRef();
     const passwordRef = useRef();
 
+    // Authentication
     const authenticationHandeler = async (e) => {
         // Stop reloading
         e.preventDefault();
@@ -31,7 +27,7 @@ function Login() {
 
         // Validations
         if (userName.trim().length < 1 || password.trim().length < 1) {
-            toast.error("Please fill all inputs");
+            toast.error("Please fill all inputs 😢");
             return;
         }
 
@@ -50,13 +46,10 @@ function Login() {
                 ) {
                     toast.success(`${res.data.message} ✨`);
 
-                    // create a token
-                    const token = makeA_token();
                     // save the session in cookies
                     document.cookie = `authenticated=true;`;
-                    document.cookie = `authentication_token=${token};`;
                     // redirect to the home page
-                    router.replace('/')
+                    router.replace("/");
                 }
 
                 return res.data;
@@ -74,8 +67,6 @@ function Login() {
                     toast.error(`${err.response.data.message} 😢`);
                 }
             });
-
-        console.log(result);
     };
 
     return (
@@ -180,16 +171,13 @@ function Login() {
 
 export default Login;
 
-
 // You should use getServerSideProps when:
 // - Only if you need to pre-render a page whose data must be fetched at request time
 export const getServerSideProps = async (ctx) => {
     // Cookies
-    const { authenticated, authentication_token } = ctx.req.cookies;
-    // check if the token is valid
-    const real_token = check_token(authentication_token);
+    const { authenticated } = ctx.req.cookies;
     // check if the user is valid
-    if (authenticated && real_token) {
+    if (authenticated !== "false") {
         return {
             redirect: {
                 destination: "/",

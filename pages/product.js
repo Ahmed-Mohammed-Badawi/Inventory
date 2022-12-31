@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import classes from "../components/Pages/product.module.scss";
 // IMPORTS
@@ -6,9 +6,8 @@ import Head from "next/head";
 import Image from "next/image";
 import SubmitButton from "../components/Layout/SubmitButton";
 import axios from "axios";
-import check_token from "../helpers/check_token";
 // Redux
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { clearTheInput } from "../Redux/Reducers/layoutReducer";
 // Notifications
 import { toast } from "react-toastify";
@@ -17,68 +16,201 @@ function Product() {
     // router
     const router = useRouter();
 
+    // Authentication Check
+    useEffect(() => {
+        // redirect if the authenticated is false
+        const authenticated = document.cookie.split("=");
+        if (authenticated[1] !== "true") {
+            // redirect if Authentication is not true
+            router.replace("/login");
+        }
+    }, [router]);
+
     //  init Redux
     const dispatch = useDispatch();
+    const { code: ReduxCode } = useSelector((state) => state.layout);
 
-    // Data
-    const DUMMY = {
-        AssetNumber: 350,
-        AssetName: "Lenovo Legion7 530p",
-        TagNumber: 5248536521,
-        AssetCategory: "Laptop",
-        Serial: "E52365S896",
-        PlateNumber: 53,
-    };
+    // State
+    const [data, setData] = useState();
+    const [imagePreview, setImagePreview] = useState();
 
-    // Get the Data Function
-    async function getTheData(
-        url = "https://inventory.gooadmin.art/api/v1/asset/details"
-    ) {
-        const theResult = await axios
-            .get(url, {
+    // refs
+    const locationRef = useRef();
+    const inventoryRef = useRef();
+    const employeeNumberRef = useRef();
+    const assignFromDateRef = useRef();
+    const quantityRef = useRef();
+    const productImageRef = useRef();
+
+    // Format the date to be able to set as a Default Value
+    const Date_AssignFromDate = data && data[8] && new Date(data[8]);
+    let day = Date_AssignFromDate && Date_AssignFromDate.getDate();
+    // if the day is 1 chars make it 2
+    if (day < 10) {
+        day = `0${day}`;
+    }
+    let month = Date_AssignFromDate && Date_AssignFromDate.getMonth() + 1;
+    // if the month is 1 chars make it 2
+    if (month < 10) {
+        month = `0${month}`;
+    }
+    const yaer = Date_AssignFromDate && Date_AssignFromDate.getFullYear();
+    // make the date formate as the input default
+    const formattedAssignFromDate = `${yaer}-${month}-${day}`;
+
+    // Get the item Data Function from the server with it's code
+    async function getTheData(searchCode) {
+        axios
+            .get("https://inventory.gooadmin.art/api/v1/asset/details", {
                 params: {
-                    assetNumber: "100670031000000",
+                    assetNumber: searchCode,
                 },
             })
-            .then((res) => res)
-            .catch((err) => err);
-
-        console.log(theResult);
+            .then((res) => {
+                // check if the data came
+                if (res.data.success && res.data.asset) {
+                    // Add the Array of Values in the state
+                    setData(res.data.asset.rows[0]);
+                }
+                // return the response data
+                return res.data;
+            })
+            .catch((err) => {
+                // Check the message error
+                const message = err.response?.data?.message
+                    ? err.response.data.message
+                    : err.message;
+                // Notification
+                toast.error(`${message} 😢`);
+                // Check if Asset doesn't exist redirect to creatpage
+                if (message.includes("Asset does not exist!")) {
+                    // redirect to the create page
+                    router.push("/create");
+                } else {
+                    // if any another error redirect to scan page
+                    router.push("/scan");
+                }
+            });
     }
 
     // Get the Data
     useEffect(() => {
-        getTheData();
-        toast.error("We Are Just test it");
-    }, []);
+        // Code from url query
+        const { code: queryCode } = router.query;
+        // check if the code is exist in redux or query
+        if (ReduxCode) {
+            // get the data of item based on the code
+            getTheData(ReduxCode);
+        } else if (queryCode) {
+            // get the data of item based on the code
+            getTheData(queryCode);
+        }
+    }, [router, ReduxCode]);
 
     // Update The Data
-    const UpdateHandler = (event) => {
-        // event.preventDefault();
+    const UpdateHandler = (Asset_Number) => {
+        // get the value from inputs and store in constants
+        const locationValue = locationRef.current.value;
+        const inventoryValue = inventoryRef.current.value;
+        const employeeNumberValue = employeeNumberRef.current.value;
+        const assignFromDateValue = assignFromDateRef.current.value;
+        const quantityValue = quantityRef.current.value;
+        const imageValue = productImageRef.current.files[0];
 
-        const Data = {
-            assetNumber: 10067003,
-            location: "Cairo",
-            inventory: "inventory",
-            employeeNumber: "Ahmed",
-            //  DAY / MONTH / YEAR
-            assignFromDate: "15/02/2001",
-            quantity: 15,
-        };
+        // Check  if the inputs is not the same
+        if (
+            locationValue == data[5] &&
+            inventoryValue == data[6] &&
+            employeeNumberValue == data[7] &&
+            assignFromDateValue == data[8] &&
+            quantityValue == data[9]
+        ) {
+            // Show error if the inputs is the same
+            toast.error(`No inputs changed 😢`);
+            return;
+        }
 
+        // Create a form data to send to the server
+        const dataAsForm = new FormData();
+        // Form data inputs
+        dataAsForm.append("assetNumber", Asset_Number);
+        dataAsForm.append("location", locationValue);
+        dataAsForm.append("inventory", inventoryValue);
+        dataAsForm.append("employeeNumber", employeeNumberValue);
+        dataAsForm.append("assignFromDate", assignFromDateValue);
+        dataAsForm.append("quantity", quantityValue);
+        dataAsForm.append("image", imageValue);
+
+        // Send the update request to the server
         axios
-            .put(`https://inventory.gooadmin.art/api/v1/update/asset`, Data)
-            .then((res) => res.data)
-            .catch((err) => console.log(err));
+            .put(
+                `https://inventory.gooadmin.art/api/v1/update/asset`,
+                dataAsForm
+            )
+            .then((res) => {
+                // Show a notification
+                if (res.data.success && res.data.message) {
+                    toast.success(`${res.data.message} ✨`);
+                }
+                // Return res data
+                return res.data;
+            })
+            .catch((err) => {
+                if (err.response?.data?.message) {
+                    // show an error message
+                    toast.error(`${err.response.data.message} 😢`);
+                } else {
+                    // show an error message
+                    toast.error(`${err.message} 😢`);
+                }
+            });
+    };
+
+    // Handle Image Change
+    const imageChangedHandler = (e) => {
+        e.preventDefault();
+
+        // add a reader for reading the Image file
+        const fileReader = new FileReader();
+
+        fileReader.addEventListener("load", (event) => {
+            setImagePreview(event.target.result);
+        });
+
+        const ImageForPreview = fileReader.readAsDataURL(
+            productImageRef.current.files[0]
+        );
+
+        // Add the image to the state for preview
+        setImagePreview(ImageForPreview);
+    };
+
+    // Initialize the Image url
+    let ImageScr;
+    // check if the srcs of the image to order the
+    if (imagePreview) {
+        ImageScr = imagePreview;
+    } else if (data && data[10]) {
+        ImageScr = data[10];
+    } else {
+        ImageScr = null;
+    }
+
+    // LogoutHandler
+    const logoutHandler = () => {
+        // change the authenticated state at cookies
+        document.cookie = `authenticated=false;`;
+        // redirect to login
+        router.replace("/login");
     };
 
     return (
         <>
             <Head>
-                <title>{DUMMY.AssetName}</title>
+                <title>Product</title>
                 <meta
                     name={"description"}
-                    content={`This Page is allowing you to check and update the product ${DUMMY.AssetName}`}
+                    content={`This Page is allowing you to check and update the product`}
                 />
             </Head>
             <div className={classes.Product}>
@@ -95,7 +227,10 @@ function Product() {
                                     />
                                 </div>
                             </div>
-                            <button className={classes.LogOut}>
+                            <button
+                                className={classes.LogOut}
+                                onClick={logoutHandler}
+                            >
                                 <Image
                                     src={"/Icons/Logout.svg"}
                                     width={18}
@@ -106,9 +241,12 @@ function Product() {
                             </button>
                         </div>
                         <div className={classes.Bottom}>
-                            <button className={classes.Create}>
+                            <button
+                                className={classes.Create}
+                                onClick={() => router.push("/")}
+                            >
                                 <Image
-                                    src={"/Icons/Create.svg"}
+                                    src={"/Icons/Home.svg"}
                                     width={30}
                                     height={30}
                                     alt={"Create Icon"}
@@ -133,36 +271,60 @@ function Product() {
                     <section className={classes.Section_2}>
                         <article className={classes.Admin_Item}>
                             <h2>Asset Number</h2>
-                            <p>{DUMMY.AssetNumber}</p>
+                            <p>{data && data[0]}</p>
                         </article>
                         <article className={classes.Admin_Item}>
                             <h2>Asset Name</h2>
-                            <p>{DUMMY.AssetName}</p>
+                            <p>{data && data[1]}</p>
                         </article>
                         <article className={classes.Admin_Item}>
                             <h2>Tag Number</h2>
-                            <p>{DUMMY.TagNumber}</p>
+                            <p></p>
                         </article>
                         <article className={classes.Admin_Item}>
                             <h2>Asset Category</h2>
-                            <p>{DUMMY.AssetCategory}</p>
+                            <p>{data && data[2]}</p>
                         </article>
                         <article className={classes.Admin_Item}>
                             <h2>Serial</h2>
-                            <p>{DUMMY.Serial}</p>
+                            <p>{data && data[3]}</p>
                         </article>
                         <article className={classes.Admin_Item}>
                             <h2>Plate Number</h2>
-                            <p>{DUMMY.PlateNumber}</p>
+                            <p>{data && data[4]}</p>
                         </article>
                     </section>
                     <section className={classes.Section_3}>
+                        <article className={classes.Product_Image}>
+                            <label htmlFor='product_image'>
+                                {ImageScr !== null ? (
+                                    <Image
+                                        src={ImageScr}
+                                        width={600}
+                                        height={300}
+                                        alt={"product image"}
+                                        objectFit={"cover"}
+                                    />
+                                ) : (
+                                    "Choose an Image"
+                                )}
+                            </label>
+                            <input
+                                id='product_image'
+                                type={"file"}
+                                placeholder={"Enter Location"}
+                                ref={productImageRef}
+                                onChange={imageChangedHandler}
+                            />
+                        </article>
                         <article className={classes.User_Item}>
                             <label htmlFor='location'>Location</label>
                             <input
                                 id='location'
                                 type={"text"}
                                 placeholder={"Enter Location"}
+                                defaultValue={data && data[5]}
+                                ref={locationRef}
                             />
                         </article>
                         <article className={classes.User_Item}>
@@ -171,6 +333,8 @@ function Product() {
                                 id='inventory'
                                 type={"text"}
                                 placeholder={"Enter Inventory"}
+                                defaultValue={data && data[6]}
+                                ref={inventoryRef}
                             />
                         </article>
                         <article className={classes.User_Item}>
@@ -179,6 +343,8 @@ function Product() {
                                 id='employee'
                                 type={"text"}
                                 placeholder={"Enter Employee"}
+                                defaultValue={data && data[7]}
+                                ref={employeeNumberRef}
                             />
                         </article>
                         <article className={classes.User_Item}>
@@ -187,8 +353,10 @@ function Product() {
                             </label>
                             <input
                                 id='AssignFromDate'
-                                type={"text"}
+                                type={"date"}
                                 placeholder={"Enter Assign from Date"}
+                                defaultValue={formattedAssignFromDate}
+                                ref={assignFromDateRef}
                             />
                         </article>
                         <article className={classes.User_Item}>
@@ -197,7 +365,7 @@ function Product() {
                             </label>
                             <input
                                 id='LastTransactionDate'
-                                type={"text"}
+                                type={"date"}
                                 placeholder={"Enter Last transaction Date"}
                             />
                         </article>
@@ -207,14 +375,18 @@ function Product() {
                             </label>
                             <input
                                 id='Quantity'
-                                type={"text"}
+                                type={"number"}
                                 placeholder={"Enter Transaction Quantity"}
+                                defaultValue={data && data[9]}
+                                ref={quantityRef}
                             />
                         </article>
                         <div className={classes.BTN_Container}>
                             <SubmitButton
                                 buttonText={"Update"}
-                                buttonFunction={() => UpdateHandler()}
+                                buttonFunction={(event) =>
+                                    UpdateHandler(ReduxCode || data[0])
+                                }
                             />
                         </div>
                     </section>
@@ -225,25 +397,3 @@ function Product() {
 }
 
 export default Product;
-
-// You should use getServerSideProps when:
-// - Only if you need to pre-render a page whose data must be fetched at request time
-export const getServerSideProps = async (ctx) => {
-    // Cookies
-    const { authenticated, authentication_token } = ctx.req.cookies;
-    // check if the token is valid
-    const real_token = check_token(authentication_token);
-    // check if the user is valid
-    if (!authenticated || !real_token) {
-        return {
-            redirect: {
-                destination: "/login",
-                permanent: false,
-            },
-        };
-    }
-
-    return {
-        props: {},
-    };
-};

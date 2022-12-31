@@ -29,4 +29,7 @@ module.exports = {
 
         return config;
     },
+    images: {
+        domains: ['inventory.gooadmin.art'],
+    },
 };

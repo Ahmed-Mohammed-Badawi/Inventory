@@ -1,7 +1,6 @@
 import Head from "next/head";
 import React from "react";
 import App from "../components/Scanner/App";
-import check_token from "../helpers/check_token";
 
 function scan() {
     return (
@@ -24,11 +23,9 @@ export default scan;
 // - Only if you need to pre-render a page whose data must be fetched at request time
 export const getServerSideProps = async (ctx) => {
     // Cookies
-    const { authenticated, authentication_token } = ctx.req.cookies;
-    // check if the token is valid
-    const real_token = check_token(authentication_token);
+    const { authenticated } = ctx.req.cookies;
     // check if the user is valid
-    if (!authenticated || !real_token) {
+    if (authenticated !== "true") {
         return {
             redirect: {
                 destination: "/login",
