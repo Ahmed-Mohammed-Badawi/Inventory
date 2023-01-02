@@ -78,13 +78,21 @@ function Product() {
             })
             .catch((err) => {
                 // Check the message error
-                const message = err.response?.data?.message
+                let message = err.response?.data?.message
                     ? err.response.data.message
                     : err.message;
+
+                // If the message has invalid identifier change the error message
+                if (message.includes("invalid identifier")) {
+                    message = "This code has no data";
+                }
                 // Notification
                 toast.error(`${message} 😢`);
                 // Check if Asset doesn't exist redirect to creatpage
-                if (message.includes("Asset does not exist!")) {
+                if (
+                    message.includes("Asset does not exist!") ||
+                    message.includes("This code has no data")
+                ) {
                     // redirect to the create page
                     router.push("/create");
                 } else {
