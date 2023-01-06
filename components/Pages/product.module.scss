@@ -120,7 +120,7 @@
             margin-bottom: 1.5rem;
 
             .Admin_Item {
-                width: 33.33%;
+                width: 50%;
                 gap: 0.7rem;
                 margin-bottom: 1.5rem;
 
@@ -161,6 +161,9 @@
                 margin-bottom: 3rem;
 
                 label {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                     position: absolute;
                     width: 48%;
                     height: 100%;
@@ -226,6 +229,26 @@
 
                     &::placeholder {
                         font-size: 1.3rem;
+                    }
+                }
+
+                select{
+                    width: 100%;
+                    padding: 1.4rem 2rem;
+                    border: 0;
+                    font-family: var(--Roboto);
+                    font-size: 1.3rem;
+                    color: var(--gray_dark_1);
+                    background-color: var(--white);
+                    cursor: pointer;
+                    caret-color: var(--orange_1);
+                    border-radius: var(--radius_5);
+                    box-shadow: 0 0 0.6rem var(--shadow_16);
+
+
+                    option{
+                        padding: 2rem;
+                        cursor: pointer;
                     }
                 }
             }

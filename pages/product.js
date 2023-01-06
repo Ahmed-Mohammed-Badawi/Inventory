@@ -34,6 +34,8 @@ function Product() {
     // State
     const [data, setData] = useState();
     const [imagePreview, setImagePreview] = useState();
+    const [employeeList, setEmployeeList] = useState();
+    const [locationsList, setLocationsList] = useState();
 
     // refs
     const locationRef = useRef();
@@ -42,6 +44,7 @@ function Product() {
     const assignFromDateRef = useRef();
     const quantityRef = useRef();
     const productImageRef = useRef();
+    const productionLineRef = useRef();
 
     // Format the date to be able to set as a Default Value
     const Date_AssignFromDate = data && data[8] && new Date(data[8]);
@@ -62,12 +65,13 @@ function Product() {
     // Get the item Data Function from the server with it's code
     async function getTheData(searchCode) {
         axios
-            .get("https://inventory.gooadmin.art/api/v1/asset/details", {
+            .get(`${process.env.NEXT_PUBLIC_GET_ASSET}`, {
                 params: {
                     assetNumber: searchCode,
                 },
             })
             .then((res) => {
+                console.log(res.data);
                 // check if the data came
                 if (res.data.success && res.data.asset) {
                     // Add the Array of Values in the state
@@ -94,11 +98,52 @@ function Product() {
                     message.includes("This code has no data")
                 ) {
                     // redirect to the create page
-                    router.push("/create");
+                    // router.push("/create");
                 } else {
                     // if any another error redirect to scan page
                     router.push("/scan");
                 }
+            });
+    }
+
+    // GET THE EMPLOYEE LIST
+    async function getTheEmployeeList() {
+        await axios
+            .get(`${process.env.NEXT_PUBLIC_GET_EMPLOYEES}`)
+            .then((res) => {
+                console.log(res.data);
+                // check if the data is exist set it in the state
+                if (res?.data?.employees?.rows) {
+                    setEmployeeList(res.data.employees.rows);
+                }
+            })
+            .catch((err) => {
+                // Check the message error
+                let message = err.response?.data?.message
+                    ? err.response.data.message
+                    : err.message;
+
+                toast.error(`${message} 😢`);
+            });
+    }
+    // GET THE LOCATIONS
+    async function getTheLocations() {
+        await axios
+            .get(`${process.env.NEXT_PUBLIC_GET_LOCATIONS}`)
+            .then((res) => {
+                console.log(res.data);
+                // check if the data is exist set it in the state
+                if (res?.data?.locations?.rows) {
+                    setLocationsList(res.data.locations.rows);
+                }
+            })
+            .catch((err) => {
+                // Check the message error
+                let message = err.response?.data?.message
+                    ? err.response.data.message
+                    : err.message;
+
+                toast.error(`${message} 😢`);
             });
     }
 
@@ -110,9 +155,17 @@ function Product() {
         if (ReduxCode) {
             // get the data of item based on the code
             getTheData(ReduxCode);
+            //  GET THE EMPLOYEE
+            getTheEmployeeList();
+            //  GET THE LOCATION
+            getTheLocations();
         } else if (queryCode) {
             // get the data of item based on the code
             getTheData(queryCode);
+            //  GET THE EMPLOYEE
+            getTheEmployeeList();
+            //  GET THE LOCATION
+            getTheLocations();
         }
     }, [router, ReduxCode]);
 
@@ -125,19 +178,8 @@ function Product() {
         const assignFromDateValue = assignFromDateRef.current.value;
         const quantityValue = quantityRef.current.value;
         const imageValue = productImageRef.current.files[0];
+        const productionLineValue = productionLineRef.current.value;
 
-        // Check  if the inputs is not the same
-        if (
-            locationValue == data[5] &&
-            inventoryValue == data[6] &&
-            employeeNumberValue == data[7] &&
-            assignFromDateValue == data[8] &&
-            quantityValue == data[9]
-        ) {
-            // Show error if the inputs is the same
-            toast.error(`No inputs changed 😢`);
-            return;
-        }
 
         // Create a form data to send to the server
         const dataAsForm = new FormData();
@@ -145,6 +187,7 @@ function Product() {
         dataAsForm.append("assetNumber", Asset_Number);
         dataAsForm.append("location", locationValue);
         dataAsForm.append("inventory", inventoryValue);
+        dataAsForm.append("productionLine", productionLineValue);
         dataAsForm.append("employeeNumber", employeeNumberValue);
         dataAsForm.append("assignFromDate", assignFromDateValue);
         dataAsForm.append("quantity", quantityValue);
@@ -152,14 +195,18 @@ function Product() {
 
         // Send the update request to the server
         axios
-            .put(
-                `https://inventory.gooadmin.art/api/v1/update/asset`,
-                dataAsForm
-            )
+            .put(`${process.env.NEXT_PUBLIC_UPDATE_ASSET}`, dataAsForm)
             .then((res) => {
                 // Show a notification
-                if (res.data.success && res.data.message) {
+                if (res?.data?.success && res?.data?.message) {
                     toast.success(`${res.data.message} ✨`);
+                }
+
+                // Show the transaction ID
+                if (res?.data?.transactionId) {
+                    toast.info(
+                        `Your tansaction Id is: ${res.data.transactionId} ✨`
+                    );
                 }
                 // Return res data
                 return res.data;
@@ -329,17 +376,47 @@ function Product() {
                             />
                         </article>
                         <article className={classes.User_Item}>
-                            <label htmlFor='location'>Location</label>
-                            <input
-                                id='location'
-                                type={"text"}
-                                placeholder={"Enter Location"}
-                                defaultValue={data && data[5]}
-                                ref={locationRef}
-                            />
+                            <label htmlFor='employee'>Assign to employee</label>
+                            <select id='employee' ref={employeeNumberRef}>
+                                <option style={{ color: "#555" }}>
+                                    Select an employee
+                                </option>
+                                {employeeList &&
+                                    employeeList.map((item) => {
+                                        return (
+                                            <option
+                                                key={item[0]}
+                                                value={item[0]}
+                                            >
+                                                {item[1]}
+                                            </option>
+                                        );
+                                    })}
+                            </select>
                         </article>
                         <article className={classes.User_Item}>
-                            <label htmlFor='inventory'>Inventory</label>
+                            <label htmlFor='location_select'>Location</label>
+                            <select id={"location_select"} ref={locationRef}>
+                                <option style={{ color: "#555" }}>
+                                    Select a location
+                                </option>
+                                {locationsList &&
+                                    locationsList.map((item) => {
+                                        return (
+                                            <option
+                                                key={item[0]}
+                                                value={item[0]}
+                                            >
+                                                {`${item[1]} - ${item[2]} - ${
+                                                    item[3]
+                                                } - ${item && item[4]}`}
+                                            </option>
+                                        );
+                                    })}
+                            </select>
+                        </article>
+                        <article className={classes.User_Item}>
+                            <label htmlFor='inventory'>Inventory/Dept</label>
                             <input
                                 id='inventory'
                                 type={"text"}
@@ -349,13 +426,14 @@ function Product() {
                             />
                         </article>
                         <article className={classes.User_Item}>
-                            <label htmlFor='employee'>Assign to employee</label>
+                            <label htmlFor='Production_line'>
+                                Production line
+                            </label>
                             <input
-                                id='employee'
+                                id='Production_line'
                                 type={"text"}
-                                placeholder={"Enter Employee"}
-                                defaultValue={data && data[7]}
-                                ref={employeeNumberRef}
+                                placeholder={"Enter Production line"}
+                                ref={productionLineRef}
                             />
                         </article>
                         <article className={classes.User_Item}>
