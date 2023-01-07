@@ -34,13 +34,14 @@ function Product() {
     // State
     const [data, setData] = useState();
     const [imagePreview, setImagePreview] = useState();
-    const [employeeList, setEmployeeList] = useState();
-    const [locationsList, setLocationsList] = useState();
+    // const [employeeList, setEmployeeList] = useState();
+    const [employeeListOfOBJ, setEmployeeListOfOBG] = useState();
+    const [locationsListOfOBG, setLocationsListOfOBG] = useState();
+    const [selectedEmployee, setSelectedEmployee] = useState();
+    const [selectedLocation, setSelectedLocation] = useState();
 
     // refs
-    const locationRef = useRef();
     const inventoryRef = useRef();
-    const employeeNumberRef = useRef();
     const assignFromDateRef = useRef();
     const quantityRef = useRef();
     const productImageRef = useRef();
@@ -71,7 +72,7 @@ function Product() {
                 },
             })
             .then((res) => {
-                console.log(res.data);
+                // console.log(res.data);
                 // check if the data came
                 if (res.data.success && res.data.asset) {
                     // Add the Array of Values in the state
@@ -111,10 +112,20 @@ function Product() {
         await axios
             .get(`${process.env.NEXT_PUBLIC_GET_EMPLOYEES}`)
             .then((res) => {
-                console.log(res.data);
+                // console.log(res.data);
                 // check if the data is exist set it in the state
                 if (res?.data?.employees?.rows) {
-                    setEmployeeList(res.data.employees.rows);
+                    // convert Arrays to obj
+                    const ArrayOfObjects = res.data.employees.rows.map(
+                        (item) => {
+                            return {
+                                code: item[0],
+                                name: item[1],
+                            };
+                        }
+                    );
+
+                    setEmployeeListOfOBG(ArrayOfObjects);
                 }
             })
             .catch((err) => {
@@ -131,10 +142,20 @@ function Product() {
         await axios
             .get(`${process.env.NEXT_PUBLIC_GET_LOCATIONS}`)
             .then((res) => {
-                console.log(res.data);
+                // console.log(res.data);
                 // check if the data is exist set it in the state
                 if (res?.data?.locations?.rows) {
-                    setLocationsList(res.data.locations.rows);
+                    // convert Arrays to obj
+                    const ArrayOfObjects = res.data.locations.rows.map(
+                        (item) => {
+                            return {
+                                value: item[0],
+                                name: `${item[1]} - ${item[2]} - ${item[3]} - ${item[4]}`,
+                            };
+                        }
+                    );
+
+                    setLocationsListOfOBG(ArrayOfObjects);
                 }
             })
             .catch((err) => {
@@ -172,23 +193,20 @@ function Product() {
     // Update The Data
     const UpdateHandler = (Asset_Number) => {
         // get the value from inputs and store in constants
-        const locationValue = locationRef.current.value;
         const inventoryValue = inventoryRef.current.value;
-        const employeeNumberValue = employeeNumberRef.current.value;
         const assignFromDateValue = assignFromDateRef.current.value;
         const quantityValue = quantityRef.current.value;
         const imageValue = productImageRef.current.files[0];
         const productionLineValue = productionLineRef.current.value;
 
-
         // Create a form data to send to the server
         const dataAsForm = new FormData();
         // Form data inputs
         dataAsForm.append("assetNumber", Asset_Number);
-        dataAsForm.append("location", locationValue);
+        dataAsForm.append("location", selectedLocation);
         dataAsForm.append("inventory", inventoryValue);
         dataAsForm.append("productionLine", productionLineValue);
-        dataAsForm.append("employeeNumber", employeeNumberValue);
+        dataAsForm.append("employeeNumber", selectedEmployee);
         dataAsForm.append("assignFromDate", assignFromDateValue);
         dataAsForm.append("quantity", quantityValue);
         dataAsForm.append("image", imageValue);
@@ -208,6 +226,9 @@ function Product() {
                         `Your tansaction Id is: ${res.data.transactionId} ✨`
                     );
                 }
+
+                // Redirect to Scan Page
+                router.push('/scan')
                 // Return res data
                 return res.data;
             })
@@ -370,50 +391,74 @@ function Product() {
                             <input
                                 id='product_image'
                                 type={"file"}
-                                placeholder={"Enter Location"}
+                                placeholder={"choose Image"}
                                 ref={productImageRef}
                                 onChange={imageChangedHandler}
                             />
                         </article>
                         <article className={classes.User_Item}>
                             <label htmlFor='employee'>Assign to employee</label>
-                            <select id='employee' ref={employeeNumberRef}>
-                                <option style={{ color: "#555" }}>
-                                    Select an employee
-                                </option>
-                                {employeeList &&
-                                    employeeList.map((item) => {
+                            <input
+                                type={"text"}
+                                className={classes.DatalistInput}
+                                list='employee_list'
+                                id='employee'
+                                placeholder='Select an Employee'
+                                onChange={(e) => {
+                                    const text = e.target.value;
+                                    employeeListOfOBJ.map((current) => {
+                                        if (current.name == text) {
+                                            setSelectedEmployee(current.code);
+                                        }
+                                    });
+                                }}
+                            ></input>
+                            <datalist id='employee_list'>
+                                {employeeListOfOBJ &&
+                                    employeeListOfOBJ.map((item) => {
                                         return (
                                             <option
-                                                key={item[0]}
-                                                value={item[0]}
+                                                key={item.code}
+                                                value={item.name}
                                             >
-                                                {item[1]}
+                                                {item.name}
                                             </option>
                                         );
                                     })}
-                            </select>
+                            </datalist>
                         </article>
                         <article className={classes.User_Item}>
-                            <label htmlFor='location_select'>Location</label>
-                            <select id={"location_select"} ref={locationRef}>
-                                <option style={{ color: "#555" }}>
-                                    Select a location
-                                </option>
-                                {locationsList &&
-                                    locationsList.map((item) => {
+                            <label htmlFor='location'>Location</label>
+                            <input
+                                type={"text"}
+                                className={classes.DatalistInput}
+                                list='location_select'
+                                id='location'
+                                placeholder='Select a Location'
+                                onChange={(e) => {
+                                    const text = e.target.value;
+                                    locationsListOfOBG.map((current) => {
+                                        if (current.value == text) {
+                                            setSelectedLocation(current.value);
+                                        } else {
+                                            setSelectedLocation("");
+                                        }
+                                    });
+                                }}
+                            ></input>
+                            <datalist id={"location_select"}>
+                                {locationsListOfOBG &&
+                                    locationsListOfOBG.map((item, i) => {
                                         return (
                                             <option
-                                                key={item[0]}
-                                                value={item[0]}
+                                                key={"ws" + i}
+                                                value={item.value}
                                             >
-                                                {`${item[1]} - ${item[2]} - ${
-                                                    item[3]
-                                                } - ${item && item[4]}`}
+                                                {item.name}
                                             </option>
                                         );
                                     })}
-                            </select>
+                            </datalist>
                         </article>
                         <article className={classes.User_Item}>
                             <label htmlFor='inventory'>Inventory/Dept</label>
