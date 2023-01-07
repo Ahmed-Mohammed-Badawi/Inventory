@@ -228,7 +228,7 @@ function Product() {
                 }
 
                 // Redirect to Scan Page
-                router.push('/scan')
+                router.push("/scan");
                 // Return res data
                 return res.data;
             })
@@ -404,6 +404,7 @@ function Product() {
                                 list='employee_list'
                                 id='employee'
                                 placeholder='Select an Employee'
+                                autoComplete='off'
                                 onChange={(e) => {
                                     const text = e.target.value;
                                     employeeListOfOBJ.map((current) => {
@@ -435,6 +436,7 @@ function Product() {
                                 list='location_select'
                                 id='location'
                                 placeholder='Select a Location'
+                                autoComplete='off'
                                 onChange={(e) => {
                                     const text = e.target.value;
                                     locationsListOfOBG.map((current) => {
