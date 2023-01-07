@@ -226,6 +226,8 @@ function Product() {
                         `Your tansaction Id is: ${res.data.transactionId} ✨`
                     );
                 }
+                // Clear the scan input
+                dispatch(clearTheInput());
 
                 // Redirect to Scan Page
                 router.push("/scan");
@@ -526,9 +528,9 @@ function Product() {
                             />
                             <SubmitButton
                                 buttonText={"Update"}
-                                buttonFunction={(event) =>
-                                    UpdateHandler(ReduxCode || data[0])
-                                }
+                                buttonFunction={(event) => {
+                                    UpdateHandler(ReduxCode || data[0]);
+                                }}
                             />
                         </div>
                     </section>
